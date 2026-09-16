@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { countWords } from '@/utils/word-count';
 
 type Message = { id: string; name: string; text: string; createdAt: string };
 const API = process.env.EXPO_PUBLIC_API_URL || '';
@@ -40,6 +41,7 @@ export default function Board() {
     finally { setPosting(false); }
   }
   const disabled = posting || !name.trim() || !text.trim() || !API;
+  const wordCount = countWords(text);
   return <SafeAreaView style={s.safe}><KeyboardAvoidingView style={s.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.page}>
     <Text style={s.eyebrow}>A LITTLE SPACE TO SHARE</Text>
     <Text style={s.title}>Pocket Board<Text style={s.dot}>.</Text></Text>
@@ -50,7 +52,7 @@ export default function Board() {
       <TextInput accessibilityLabel="Your name" style={s.input} value={name} onChangeText={setName} maxLength={30} placeholder="e.g. Suyash" placeholderTextColor="#7c837f" editable={!posting} />
       <Text style={s.label}>Message</Text>
       <TextInput accessibilityLabel="Message" style={[s.input,s.message]} value={text} onChangeText={setText} maxLength={280} multiline placeholder="Something worth sharing…" placeholderTextColor="#7c837f" editable={!posting} />
-      <View style={s.row}><Text accessibilityLiveRegion="polite" style={s.muted}>{text.length}/280</Text><Pressable accessibilityRole="button" disabled={disabled} onPress={post} style={[s.button,disabled && s.disabled]}><Text style={s.buttonText}>{posting ? 'Posting…' : 'Post message ↗'}</Text></Pressable></View>
+      <View style={s.row}><Text accessibilityLiveRegion="polite" style={s.muted}>{wordCount} {wordCount === 1 ? 'word' : 'words'} · {text.length}/280</Text><Pressable accessibilityRole="button" disabled={disabled} onPress={post} style={[s.button,disabled && s.disabled]}><Text style={s.buttonText}>{posting ? 'Posting…' : 'Post message ↗'}</Text></Pressable></View>
       <Text style={s.small}>Shared class demo. Everyone with the API link can read and post. Use demo messages only.</Text>
     </View>
     {!!error && <Text accessibilityRole="alert" style={s.error}>{error}</Text>}
