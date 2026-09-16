@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS messages (
+  sequence BIGSERIAL UNIQUE NOT NULL,
+  id UUID PRIMARY KEY,
+  name TEXT NOT NULL CHECK (char_length(name) BETWEEN 1 AND 30),
+  text TEXT NOT NULL CHECK (char_length(text) BETWEEN 1 AND 280),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
